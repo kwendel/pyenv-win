@@ -483,6 +483,37 @@ Sub Dummy()
 End Sub
 
 
+Sub CommandActivate(arg)
+    If arg.Count >= 3 then
+        If arg(1) = "--help" then
+            help = getCommandOutput("cmd /c "&strDirLibs&"\pyenv-commands.bat --help")
+            WScript.echo help
+            Exit Sub
+        End If
+    End If
+
+    ' pyenv activate
+    ' pyenv activate <name>
+
+    Dim envname
+    Dim command
+    If arg.count = 2 then
+        envname = arg(1)
+        command = strCurrent& "\" &envname& "\Scripts\Activate.ps1"
+    Else
+        envname = "env"
+        command = strCurrent& "\env\Scripts\Activate.ps1"
+    End If
+
+    ' objws.Run("cmd /K " & command & " && Title Python Virtual Environment")
+    ' objws.SendKeys("%{F4}")
+
+    objws.SendKeys(command)
+    objws.SendKeys("{Enter}")
+    ' objws.SendKeys("title Python venv: %PROMPT:~0,-4%")
+    ' objws.SendKeys("{Enter}")
+End Sub
+
 Sub main(arg)
     If arg.Count = 0 Then
         ShowHelp
@@ -501,6 +532,7 @@ Sub main(arg)
            Case "whence"      CommandWhence(arg)
            Case "help"        CommandHelp(arg)
            Case "--help"      CommandHelp(arg)
+           Case "activate"    CommandActivate(arg)
            Case Else          PlugIn(arg)
         End Select
     End If
